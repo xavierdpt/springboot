@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script>
+	var statuses = [ 'CONNECTING', 'OPEN', 'CLOSING', 'CLOSED' ];
+	var connection = null;
+	function connect() {
+		if (!connection) {
+			connection = new WebSocket("ws://localhost:8080/mysocket");
+			console.log(statuses[connection.readyState]);
+			connection.onopen = function() {
+				console.log(statuses[connection.readyState]);
+			}
+			connection.onclose = function() {
+				console.log(statuses[connection.readyState]);
+				connection=null;
+			}
+			connection.onmessage = function(e) {
+				console.log(e.data);
+			}
+			connection.onerror = function() {
+				console.log("Error");
+			}
+		}
+	}
+	function disconnect() {
+		if (connection) {
+			connection.close();
+			console.log(statuses[connection.readyState]);
+		}
+	}
+	function send() {
+		if (connection) {
+			connection.send(document.getElementById('message').value);
+		}
+	}
+</script>
+</head>
+<body>
+	<div>
+		<button onclick="connect()">Connect</button>
+		<button onclick="disconnect()">Disconnect</button>
+	</div>
+	<div>
+		<input type="text" id="message" />
+	</div>
+	<div>
+		<button onclick="send()">Send</button>
+	</div>
+</body>
+</html>
